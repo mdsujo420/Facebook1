@@ -112,13 +112,13 @@ _last_poll = [0.0]
 
 
 def img_pollinations(prompt, seed):
-    """ফ্রি (কী ছাড়া চলে, তবে নামহীন লেভেলে ১৫ সেকেন্ডে ১টা রিকোয়েস্ট)"""
+    """Pollinations (নতুন gen এন্ডপয়েন্ট)। enter.pollinations.ai-এর ফ্রি sk_ চাবি দিলে স্থিতিশীল"""
     from urllib.parse import quote
     key = os.getenv("POLLINATIONS_KEY")
     params = {"width": 768, "height": 1344, "model": "flux", "nologo": "true", "seed": seed}
     headers = {}
     if key:
-        params["token"] = key
+        params["key"] = key
         headers["Authorization"] = f"Bearer {key}"
     last_status = None
     for _ in range(4):
@@ -126,12 +126,14 @@ def img_pollinations(prompt, seed):
         if not key and wait > 0:
             time.sleep(wait)
         _last_poll[0] = time.time()
-        r = requests.get(f"https://image.pollinations.ai/prompt/{quote(prompt[:900])}",
+        r = requests.get(f"https://gen.pollinations.ai/image/{quote(prompt[:900])}",
                          params=params, headers=headers, timeout=180)
         if r.status_code == 429 or r.status_code >= 500:
             last_status = r.status_code
             time.sleep(20)  # ব্যস্ত/সাময়িক বন্ধ: একটু থেমে আবার
             continue
+        if r.status_code in (401, 403):
+            raise RuntimeError(f"pollinations: চাবি গ্রহণ হয়নি (HTTP {r.status_code}), POLLINATIONS_KEY দেখো")
         r.raise_for_status()
         if "image" not in r.headers.get("content-type", ""):
             raise RuntimeError("pollinations: ছবি আসেনি")
