@@ -89,7 +89,9 @@ def save_state(st):
 
 
 def err_text(e):
-    return f"{e} {getattr(getattr(e, 'response', None), 'text', '')[:300]}"
+    body = getattr(getattr(e, "response", None), "text", "")[:200]
+    msg = re.sub(r"\s*for url:\s*\S+", "", str(e))
+    return f"{msg[:200]} {body}".strip()
 
 
 # ---------- AI ----------
@@ -118,6 +120,7 @@ def img_pollinations(prompt, seed):
     if key:
         params["token"] = key
         headers["Authorization"] = f"Bearer {key}"
+    last_status = None
     for _ in range(4):
         wait = 16 - (time.time() - _last_poll[0])
         if not key and wait > 0:
@@ -125,14 +128,15 @@ def img_pollinations(prompt, seed):
         _last_poll[0] = time.time()
         r = requests.get(f"https://image.pollinations.ai/prompt/{quote(prompt[:900])}",
                          params=params, headers=headers, timeout=180)
-        if r.status_code == 429:
-            time.sleep(16)
+        if r.status_code == 429 or r.status_code >= 500:
+            last_status = r.status_code
+            time.sleep(20)  # ব্যস্ত/সাময়িক বন্ধ: একটু থেমে আবার
             continue
         r.raise_for_status()
         if "image" not in r.headers.get("content-type", ""):
             raise RuntimeError("pollinations: ছবি আসেনি")
         return r.content
-    raise RuntimeError("pollinations: রেট লিমিট")
+    raise RuntimeError(f"pollinations: সার্ভার ব্যস্ত বা বন্ধ (HTTP {last_status})")
 
 
 def img_gemini(prompt, seed=None):
