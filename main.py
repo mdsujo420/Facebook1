@@ -1,4 +1,4 @@
-import os, io, json, time, base64, random, shutil, subprocess, uuid, requests
+import os, io, re, json, time, base64, random, shutil, subprocess, uuid, requests
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 from pathlib import Path
@@ -11,8 +11,8 @@ MUSIC = ROOT / "music"
 UP = ROOT / "upload_tmp"
 SOUNDS = ROOT / "sounds"
 GRAPH = "https://graph.facebook.com/v21.0"
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-IMAGE_MODEL = os.getenv("IMAGE_MODEL", "gemini-2.5-flash-image")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL") or "gemini-3.8-flash"
+IMAGE_MODEL = os.getenv("IMAGE_MODEL") or "gemini-2.5-flash-image"
 TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TG_CHAT = str(os.getenv("TELEGRAM_CHAT_ID", ""))
 BW, BH = 1296, 2304          # base image (1.2x) for zoom headroom
@@ -42,10 +42,15 @@ def tg_api(method, **kw):
     return requests.post(f"https://api.telegram.org/bot{TG_TOKEN}/{method}", timeout=120, **kw).json()
 
 
+def redact(t):
+    t = re.sub(r"(key|token|access_token)=[^&\s\"']+", r"\1=***", str(t))
+    return re.sub(r"bot\d+:[\w-]+", "bot***", t)
+
+
 def tg_send(msg):
     if TG_TOKEN and TG_CHAT and msg:
         try:
-            tg_api("sendMessage", data={"chat_id": TG_CHAT, "text": msg[:4000]})
+            tg_api("sendMessage", data={"chat_id": TG_CHAT, "text": redact(msg)[:4000]})
         except Exception:
             pass
 
@@ -604,6 +609,8 @@ Return ONLY JSON: {{"style_prompt": "...", "image_style": "..."}}""")
                     made += 1
                 except Exception as e:
                     tg_send(f"❌ {name} ভিডিও ফেল: {err_text(e)}")
+        if made == 0:
+            return "❌ কোনো ভিডিও বানানো যায়নি। ওপরের এরর মেসেজ দেখো।"
         return f"✅ {made}টা ভিডিও রেডি। সময় দিতে: /schedule page1 18:00 21:00"
 
     if cmd == "/schedule":
