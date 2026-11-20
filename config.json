@@ -1,0 +1,52 @@
+{
+  "timezone": "Asia/Dhaka",
+  "auto_post_every_hours": 4,
+  "pages": [
+    {
+      "name": "page1",
+      "page_id": "PAGE_ID_1",
+      "token_env": "PAGE_TOKEN_1",
+      "language": "English",
+      "niche": "Funny AI-style opossum (possum) life: chaotic, sleepy, snack-obsessed possum in relatable everyday scenes",
+      "style": "short witty one-liner captions, relatable humor, cozy cinematic look",
+      "image_style": "photorealistic, cinematic lighting, shallow depth of field, ultra-detailed, sharp focus, realistic fur texture, 4K photo quality, vertical 9:16",
+      "voice": "en-US-AnaNeural",
+      "allow_speech": true,
+      "variety": "Mainly opossums. About 1 in 3 videos may feature other animals (raccoon, fox, owl, hedgehog, deer, dog, cat), birds or nature scenes."
+    },
+    {
+      "name": "page2",
+      "page_id": "PAGE_ID_2",
+      "token_env": "PAGE_TOKEN_2",
+      "language": "English",
+      "niche": "Wholesome cute possum moments: mama possum with babies, tiny possums, gentle forest scenes",
+      "style": "heartwarming, soft and sweet captions",
+      "image_style": "photorealistic, soft natural light, macro detail, ultra-detailed, sharp focus, realistic fur texture, 4K photo quality, vertical 9:16",
+      "voice": "en-US-GuyNeural",
+      "allow_speech": true,
+      "variety": "Wholesome animals and birds of any kind (mother and babies, friendships, rescues by nature itself); possums are welcome but not required."
+    },
+    {
+      "name": "page3",
+      "page_id": "PAGE_ID_3",
+      "token_env": "PAGE_TOKEN_3",
+      "language": "English",
+      "niche": "Possum in seasonal and cozy scenes: snowy Christmas, autumn leaves, rainy window, campfire",
+      "style": "dreamy, calm, festive captions",
+      "image_style": "photorealistic, warm glowing lights, atmospheric, ultra-detailed, sharp focus, realistic fur texture, 4K photo quality, vertical 9:16",
+      "voice": "en-GB-SoniaNeural",
+      "allow_speech": true,
+      "variety": "Seasonal and cozy nature scenes with animals and birds (snow, autumn, rain, campfire); mix species and moods."
+    }
+  ],
+  "scenes": 4,
+  "seconds": 20,
+  "speech_chance": 0.1,
+  "music_chance": 0.3,
+  "facebook_enabled": false,
+  "durations": [
+    10,
+    15,
+    20
+  ]
+}
